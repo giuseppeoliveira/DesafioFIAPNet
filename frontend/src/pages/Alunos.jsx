@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import Pagination from '../components/Pagination'
+import AlunoFormInline from '../components/AlunoFormInline'
+import { FiEdit, FiTrash2, FiUserPlus } from 'react-icons/fi'
+import { formatCPF, formatDate } from '../utils/format'
+import { useAlert } from '../contexts/AlertContext'
 
 export default function Alunos() {
   const [alunos, setAlunos] = useState([])
@@ -15,6 +19,8 @@ export default function Alunos() {
   const [selectedAluno, setSelectedAluno] = useState(null)
   const [turmaSearch, setTurmaSearch] = useState('')
   const [turmasResults, setTurmasResults] = useState([])
+  const [showForm, setShowForm] = useState(false)
+  const [editingCpf, setEditingCpf] = useState(null)
 
   const pageSize = 10
 ''
@@ -40,12 +46,13 @@ export default function Alunos() {
   }
 
   async function handleDelete(id) {
-    if (!confirm('Confirma exclusão do aluno?')) return
+    const confirmed = await showConfirm('Confirma exclusão do aluno?')
+    if (!confirmed) return
     try {
       await api.delete(`/alunos/${id}`)
       fetchAlunos('[]', 1)
     } catch (err) {
-      alert(err?.response?.data?.message || 'Erro ao excluir')
+      showAlert(err?.response?.data?.message || 'Erro ao excluir')
     }
   }
 
@@ -65,26 +72,32 @@ export default function Alunos() {
       setTurmasResults(items)
     } catch (err) {
       console.error(err)
-      alert('Erro ao buscar turmas')
+      showAlert('Erro ao buscar turmas')
     }
   }
 
   async function selectTurma(turma) {
     if (!selectedAluno || !selectedAluno.id) {
-      alert('Aluno não possui id; não é possível matricular. Edite o aluno para garantir que ele tenha um id numérico.')
+      showAlert('Aluno não possui id; não é possível matricular. Edite o aluno para garantir que ele tenha um id numérico.')
       return
     }
 
     try {
       await api.post(`/alunos/${selectedAluno.id}/matriculas?turmaId=${turma.id}`)
-      alert('Aluno matriculado com sucesso')
+      showAlert('Aluno matriculado com sucesso')
       setShowSelector(false)
       setSelectedAluno(null)
       // opcional: atualizar lista de alunos ou turmas se necessário
       fetchAlunos(search, page)
     } catch (err) {
-      alert(err?.response?.data?.message || 'Erro ao matricular')
+      showAlert(err?.response?.data?.message || 'Erro ao matricular')
     }
+  }
+
+  function handleFormSaved() {
+    setShowForm(false)
+    setEditingCpf(null)
+    fetchAlunos(search, page)
   }
 
   return (
@@ -95,12 +108,12 @@ export default function Alunos() {
           <p className="muted">Listagem de alunos — ordenada e paginada</p>
         </div>
         <div style={{display:'flex',gap:8,alignItems:'center'}}>
-          <select value={searchType} onChange={(e) => setSearchType(e.target.value)} style={{height:32}}>
+          <select value={searchType} onChange={(e) => setSearchType(e.target.value)} style={{height:36,borderRadius:8,padding:'6px 8px'}}>
             <option value="cpf">CPF</option>
             <option value="nome">Nome</option>
           </select>
           <input className="search" placeholder={searchType === 'cpf' ? 'Buscar por CPF' : 'Buscar por nome'} value={search} onChange={(e) => setSearch(e.target.value)} />
-          <button className="btn" onClick={() => navigate('/alunos/new')}>Novo Aluno</button>
+          <button className="btn" onClick={() => { setEditingCpf(null); setShowForm(true); }}>Cadastrar Aluno</button>
         </div>
       </div>
 
@@ -119,13 +132,15 @@ export default function Alunos() {
             {alunos.map((a) => (
               <tr key={a.id || a.cpf}>
                 <td>{a.nome}</td>
-                <td>{a.cpf}</td>
-                <td>{a.dataNascimento}</td>
+                <td>{formatCPF(a.cpf)}</td>
+                <td>{formatDate(a.dataNascimento)}</td>
                 <td>{a.email}</td>
                 <td>
-                  <button className="btn" onClick={() => navigate(`/alunos/${a.cpf}/edit`)}>Editar</button>
-                  <button style={{marginLeft:8}} className="btn" onClick={() => handleDelete(a.id || a.cpf)}>Excluir</button>
-                  <button style={{marginLeft:8}} className="btn" onClick={() => openTurmaSelector(a)}>Matricular</button>
+                  <div className="action-group">
+                    <button className="icon-btn" title="Editar" onClick={() => { setEditingCpf(a.cpf); setShowForm(true); }}><FiEdit /></button>
+                    <button className="icon-btn" title="Excluir" onClick={() => handleDelete(a.id || a.cpf)}><FiTrash2 /></button>
+                    <button className="icon-btn" title="Matricular" onClick={() => openTurmaSelector(a)}><FiUserPlus /></button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -161,6 +176,15 @@ export default function Alunos() {
             <div style={{marginTop:12,display:'flex',justifyContent:'flex-end'}}>
               <button className="btn" onClick={() => { setShowSelector(false); setSelectedAluno(null); }}>Fechar</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Aluno form modal (create / edit inline) */}
+      {showForm && (
+        <div className="modal-overlay">
+          <div className="modal modal--wide">
+            <AlunoFormInline cpf={editingCpf} onCancel={() => { setShowForm(false); setEditingCpf(null); }} onSaved={handleFormSaved} />
           </div>
         </div>
       )}

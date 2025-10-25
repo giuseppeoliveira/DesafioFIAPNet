@@ -1,12 +1,13 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FiLogIn, FiUsers, FiLayers } from 'react-icons/fi'
+import bgIndex from '../assets/bg-index.png'
 
 export default function Home(){
   const navigate = useNavigate()
   return (
     <div>
-      <div className="hero hero--center">
+      <div className="hero hero--center" style={{backgroundImage:`linear-gradient(90deg, rgba(91,43,138,0.65), rgba(87,36,145,0.55)), url(${bgIndex})`, backgroundSize:'cover', backgroundPosition:'center'}}>
         <div className="container">
           <div style={{maxWidth:900}}>
             <h2>Secretaria FIAP — Sistema de Gestão</h2>

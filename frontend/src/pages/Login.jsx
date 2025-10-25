@@ -45,9 +45,8 @@ export default function Login() {
             <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required style={{flex:1}} />
           </div>
 
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:12}}>
+          <div style={{display:'flex',justifyContent:'center',alignItems:'center',marginTop:12}}>
             <button className="btn" type="submit">Entrar</button>
-            <button type="button" className="btn secondary" onClick={() => { setEmail('admin@gmail.com'); setPassword('Fiap@2025') }}>Preencher</button>
           </div>
           {error && <p className="error">{error}</p>}
         </form>

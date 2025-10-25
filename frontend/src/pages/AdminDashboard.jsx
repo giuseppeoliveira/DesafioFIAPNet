@@ -11,7 +11,7 @@ export default function AdminDashboard(){
         <p className="muted">Selecione uma opção para começar a gerenciar</p>
       </div>
 
-      <div className="grid" style={{gridTemplateColumns:'repeat(3,1fr)',gap:20,marginTop:18}}>
+  <div className="grid" style={{gridTemplateColumns:'repeat(2,minmax(280px,360px))',gap:20,marginTop:18,justifyContent:'center',marginLeft:'auto',marginRight:'auto'}}>
         <div className="card feature-card">
           <div className="icon-box" style={{background:'rgba(255,85,170,0.12)'}}>
             <FiUsers style={{color:'#ff1e78',fontSize:20}} />

@@ -68,8 +68,9 @@ public class TurmaRepository : ITurmaRepository
                 (nomeQuery.Length > 0 && t.Nome.Contains(nomeQuery)) || nomeQuery.Length == 0
             ).OrderBy(a => a.Nome); 
 
-        var totalCount = await dbQuery.CountAsync(cancellationToken);
-        var totalPages = totalCount / query.TamanhoPagina;
+    var totalCount = await dbQuery.CountAsync(cancellationToken);
+    var totalPages = (int)Math.Ceiling((double)totalCount / query.TamanhoPagina);
+    if (totalPages < 1) totalPages = 1;
 
         var skipAmount = (query.Pagina - 1) * query.TamanhoPagina;
 

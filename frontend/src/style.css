@@ -186,3 +186,43 @@ th{font-weight:600}
 	.grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
 	.stat-row{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
 }
+
+/* Action button group used in tables */
+.action-group{display:flex;gap:8px;align-items:center}
+.action-btn{padding:6px 10px;border-radius:6px;border:1px solid rgba(16,19,24,0.06);background:transparent;cursor:pointer;font-weight:600}
+.action-btn:hover{background:rgba(91,43,138,0.06);transform:translateY(-1px)}
+
+/* Icon buttons used for edit/delete/matricular */
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid rgba(16,19,24,0.06);background:transparent;cursor:pointer}
+.icon-btn svg{width:18px;height:18px}
+.icon-btn:hover{background:rgba(91,43,138,0.06);transform:translateY(-2px)}
+
+/* Improved search styling */
+.search{padding:10px 12px;border-radius:8px;border:1px solid #e6e6ee;min-width:260px}
+
+/* Pagination visuals */
+.pagination{display:flex;align-items:center;gap:12px;justify-content:center}
+.pagination button{padding:8px 12px;border-radius:8px;border:0;background:var(--color-accent);color:#fff;cursor:pointer}
+.pagination button[disabled]{opacity:0.5;cursor:not-allowed}
+
+/* Modal overlay and modal box for inline forms and selectors */
+.modal-overlay{position:fixed;inset:0;background:linear-gradient(rgba(16,19,24,0.35), rgba(16,19,24,0.45));display:flex;align-items:center;justify-content:center;z-index:2000;padding:20px;backdrop-filter:blur(4px)}
+.modal{background:var(--color-surface);padding:20px;border-radius:14px;max-width:640px;width:100%;box-shadow:0 30px 70px rgba(16,19,24,0.2);border:1px solid rgba(16,19,24,0.04)}
+.modal--wide{max-width:900px}
+
+.modal h3{margin:0 0 6px 0;color:var(--color-primary)}
+.modal p{margin:0;color:#444}
+.modal .muted{color:#666}
+.modal .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.modal .btn{min-width:88px}
+.modal .btn.secondary{background:transparent;border:1px solid rgba(16,19,24,0.06);color:var(--text-primary)}
+
+/* top button styles for modal close */
+.top-btn{background:transparent;border:0;color:var(--text-primary);font-weight:700;padding:6px 8px;border-radius:6px;cursor:pointer}
+
+/* Make 'Cadastrar Aluno' button stand out */
+.btn{display:inline-block;background:var(--color-accent);color:#fff;padding:10px 16px;border-radius:6px;border:0;cursor:pointer;font-weight:600}
+.btn.secondary{background:transparent;border:1px solid rgba(16,19,24,0.06);color:var(--text-primary)}
+
+/* Ensure admin dashboard feature cards are centered */
+.grid[style*="justifyContent"]{justify-items:center}

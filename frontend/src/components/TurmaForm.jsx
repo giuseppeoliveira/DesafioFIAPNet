@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import api from '../services/api'
+import { useAlert } from '../contexts/AlertContext'
 
 export default function TurmaForm() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [form, setForm] = useState({ nome: '', descricao: '' })
   const [errors, setErrors] = useState({})
+  const { showAlert } = useAlert()
 
   useEffect(() => {
     if (id) load(id)
@@ -18,7 +20,7 @@ export default function TurmaForm() {
       setForm({ nome: res.data?.nome || '', descricao: res.data?.descricao || '' })
     } catch (err) {
       console.error(err)
-      alert('Falha ao carregar turma')
+      showAlert('Falha ao carregar turma')
     }
   }
 
@@ -36,14 +38,14 @@ export default function TurmaForm() {
     try {
       if (id) {
         await api.put(`/turmas/${id}`, form)
-        alert('Turma atualizada')
+        showAlert('Turma atualizada')
       } else {
         await api.post('/turmas', form)
-        alert('Turma criada')
+        showAlert('Turma criada')
       }
       navigate('/turmas')
     } catch (err) {
-      alert(err?.response?.data?.message || 'Erro ao salvar')
+      showAlert(err?.response?.data?.message || 'Erro ao salvar')
     }
   }
 

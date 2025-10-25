@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import Pagination from '../components/Pagination'
+import TurmaFormInline from '../components/TurmaFormInline'
+import { FiEdit, FiTrash2, FiInfo } from 'react-icons/fi'
+import { useAlert } from '../contexts/AlertContext'
 
 export default function Turmas() {
   const [turmas, setTurmas] = useState([])
@@ -14,6 +17,9 @@ export default function Turmas() {
   const [showDetails, setShowDetails] = useState(false)
   const [details, setDetails] = useState(null)
   const [detailsLoading, setDetailsLoading] = useState(false)
+  const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState(null)
+  const { showAlert, showConfirm } = useAlert()
 
   useEffect(() => {
     fetchTurmas(search, page)
@@ -38,7 +44,7 @@ export default function Turmas() {
       setDetails(normalized)
     } catch (err) {
       console.error(err)
-      alert('Erro ao carregar detalhes')
+      showAlert('Erro ao carregar detalhes')
       setShowDetails(false)
     } finally {
       setDetailsLoading(false)
@@ -60,12 +66,13 @@ export default function Turmas() {
   }
 
   async function handleDelete(id) {
-    if (!confirm('Confirma exclusão da turma?')) return
+    const confirmed = await showConfirm('Confirma exclusão da turma?')
+    if (!confirmed) return
     try {
       await api.delete(`/turmas/${id}`)
       fetchTurmas(search, page)
     } catch (err) {
-      alert(err?.response?.data?.message || 'Erro ao excluir')
+      showAlert(err?.response?.data?.message || 'Erro ao excluir')
     }
   }
 
@@ -78,7 +85,7 @@ export default function Turmas() {
         </div>
         <div style={{display:'flex',gap:8,alignItems:'center'}}>
           <input className="search" placeholder="Buscar por nome" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <button className="btn" onClick={() => navigate('/turmas/new')}>Nova Turma</button>
+          <button className="btn" onClick={() => { setEditingId(null); setShowForm(true); }}>Cadastrar Turma</button>
         </div>
       </div>
 
@@ -99,9 +106,11 @@ export default function Turmas() {
                 <td>{t.descricao}</td>
                 <td>{t.quantidadeAlunos ?? t.alunos?.length ?? '-'}</td>
                 <td>
-                  <button className="btn" onClick={() => navigate(`/turmas/${t.id || t.nome}/edit`)}>Editar</button>
-                  <button style={{marginLeft:8}} className="btn" onClick={() => handleDelete(t.id || t.nome)}>Excluir</button>
-                  <button style={{marginLeft:8}} className="btn" onClick={() => openDetails(t.id)}>Detalhes</button>
+                  <div className="action-group">
+                    <button className="icon-btn" title="Editar" onClick={() => { setEditingId(t.id || t.nome); setShowForm(true); }}><FiEdit /></button>
+                    <button className="icon-btn" title="Excluir" onClick={() => handleDelete(t.id || t.nome)}><FiTrash2 /></button>
+                    <button className="icon-btn" title="Detalhes" onClick={() => openDetails(t.id)}><FiInfo /></button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -144,7 +153,14 @@ export default function Turmas() {
           </div>
         </div>
       )}
-
+    
+        {showForm && (
+          <div className="modal-overlay">
+            <div className="modal modal--wide">
+              <TurmaFormInline id={editingId} onCancel={() => { setShowForm(false); setEditingId(null); }} onSaved={() => { setShowForm(false); setEditingId(null); fetchTurmas(search, page); }} />
+            </div>
+          </div>
+        )}
       <div style={{marginTop:12}}>
         <Pagination page={page} totalPages={totalPages} onChange={setPage} />
       </div>

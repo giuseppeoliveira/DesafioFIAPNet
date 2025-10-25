@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
 import api from '../services/api'
 import { useAlert } from '../contexts/AlertContext'
 
@@ -18,27 +17,31 @@ function validatePassword(pwd) {
   return pwd.length >= 8 && /[A-Z]/.test(pwd) && /[a-z]/.test(pwd) && /\d/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)
 }
 
-export default function AlunoForm() {
-  const { id: cpf } = useParams()
-  const navigate = useNavigate()
+export default function AlunoFormInline({ cpf: initialCpf = null, onSaved = () => {}, onCancel = () => {} }) {
   const [form, setForm] = useState({ nome: '', dataNascimento: '', cpf: '', email: '', senha: '' })
   const [errors, setErrors] = useState({})
   const [id, setId] = useState(0)
+  const [loading, setLoading] = useState(false)
   const { showAlert } = useAlert()
 
   useEffect(() => {
-    if (cpf) load(cpf)
-  }, [cpf])
+    if (initialCpf) load(initialCpf)
+  }, [initialCpf])
 
   async function load(searchQuery) {
     try {
-      const res = await api.get(`/alunos?cpfQuery=${searchQuery}`)
+      setLoading(true)
+      const res = await api.get(`/alunos?cpfQuery=${encodeURIComponent(searchQuery)}`)
       const aluno = res.data.items && res.data.items.length > 0 ? res.data.items[0] : null
-      setForm({ nome: aluno.nome || '', dataNascimento: aluno.dataNascimento?.substring(0,10) || '', cpf: aluno.cpf || '', email: aluno.email || '', senha: '' })
-      setId(aluno.id || 0)
+      if (aluno) {
+        setForm({ nome: aluno.nome || '', dataNascimento: aluno.dataNascimento?.substring(0,10) || '', cpf: aluno.cpf || '', email: aluno.email || '', senha: '' })
+        setId(aluno.id || 0)
+      }
     } catch (err) {
       console.error(err)
       showAlert('Falha ao carregar aluno')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -48,11 +51,11 @@ export default function AlunoForm() {
     if (!form.dataNascimento) e.dataNascimento = 'Data de nascimento é obrigatória'
     if (!validateCPF(form.cpf)) e.cpf = 'CPF inválido (11 dígitos)'
     if (!validateEmail(form.email)) e.email = 'Email inválido'
-    if (!cpf) {
-      // creating: password required and must be strong
+    if (!initialCpf) {
+      // creating: password required
       if (!validatePassword(form.senha)) e.senha = 'Senha fraca (min 8 chars, maiúscula, minúscula, número e símbolo)'
     } else {
-      // editing: password is optional; if provided, validate strength
+      // editing: optional password, but validate if provided
       if (form.senha && !validatePassword(form.senha)) e.senha = 'Senha fraca (se fornecida: min 8 chars, maiúscula, minúscula, número e símbolo)'
     }
     setErrors(e)
@@ -63,23 +66,27 @@ export default function AlunoForm() {
     e.preventDefault()
     if (!validate()) return
     try {
-      if (cpf) {
+      if (initialCpf) {
         await api.put(`/alunos/${id}`, form)
-        showAlert('Aluno atualizado')
+        // inform parent
+        showAlert('Aluno atualizado').then(() => onSaved())
       } else {
         await api.post('/alunos', form)
-        showAlert('Aluno criado')
+        showAlert('Aluno criado').then(() => onSaved())
       }
-      navigate('/alunos')
     } catch (err) {
       showAlert(err?.response?.data?.message || 'Erro ao salvar')
     }
   }
 
+
   return (
     <div>
-      <h2>{cpf ? 'Editar Aluno' : 'Novo Aluno'}</h2>
-      <form onSubmit={handleSubmit} className="form">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <h3 style={{margin:0}}>{initialCpf ? 'Editar Aluno' : 'Cadastrar Aluno'}</h3>
+        <button className="top-btn" onClick={onCancel}>X</button>
+      </div>
+      <form onSubmit={handleSubmit} className="form" style={{marginTop:12}}>
         <label>Nome</label>
         <input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} />
         {errors.nome && <small className="error">{errors.nome}</small>}
@@ -92,7 +99,6 @@ export default function AlunoForm() {
         <input
           value={form.cpf}
           onChange={(e) => {
-            // allow only digits and limit to 11 characters (no punctuation)
             const digits = e.target.value.replace(/\D/g, '').slice(0, 11)
             setForm({ ...form, cpf: digits })
           }}
@@ -106,13 +112,15 @@ export default function AlunoForm() {
         <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
         {errors.email && <small className="error">{errors.email}</small>}
 
-  <label>Senha{cpf ? ' (preencha para alterar)' : ''}</label>
-  <input type="password" value={form.senha} onChange={(e) => setForm({ ...form, senha: e.target.value })} />
-  {errors.senha && <small className="error">{errors.senha}</small>}
+        <>
+          <label>Senha{initialCpf ? ' (preencha para alterar)' : ''}</label>
+          <input type="password" value={form.senha} onChange={(e) => setForm({ ...form, senha: e.target.value })} />
+          {errors.senha && <small className="error">{errors.senha}</small>}
+        </>
 
-        <div style={{ marginTop: 12 }}>
-          <button type="submit">Salvar</button>
-          <button type="button" onClick={() => navigate('/alunos')} style={{ marginLeft: 8 }}>Cancelar</button>
+        <div style={{ marginTop: 12, display:'flex', gap:8, justifyContent:'flex-end' }}>
+          <button type="button" className="btn secondary" onClick={onCancel}>Cancelar</button>
+          <button type="submit" className="btn">Salvar</button>
         </div>
       </form>
     </div>
