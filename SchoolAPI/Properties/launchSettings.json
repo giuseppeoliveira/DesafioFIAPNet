@@ -1,0 +1,33 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5013",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "https": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "https://localhost:7117;http://localhost:5013",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SchoolAPI_DB_ConnectionString": "Host=localhost;Port=32769;Database=schooldb;Username=postgres;Password=postgres"
+      }
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": "ubuntu",
+      "applicationUrl": "https://localhost:7117;http://localhost:5013",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SchoolAPI_DB_ConnectionString": "Host=localhost;Port=32770;Database=schooldb;Username=postgres;Password=postgres"
+      }
+    }
+  }
+}

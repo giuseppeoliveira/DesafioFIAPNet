@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=schooldb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Mount initialization scripts; any .sql/.sh here runs on first DB init
+      - ./scripts:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  schoolapi:
+    build:
+      context: .
+      dockerfile: SchoolAPI/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "5000:80"
+    environment:
+      # Connection string: Host=db (service name), DB=schooldb, user=postgres (match db env)
+      - SchoolAPI_DB_ConnectionString=Host=db;Port=5432;Database=schooldb;Username=postgres;Password=postgres
+      # JWT key (replace with a strong key in production)
+      - JwtSettings__Key=9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a089f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a089f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a089f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a089
+      # Run on HTTP inside container; maps to host port 5000
+      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: on-failure
+
+volumes:
+  pgdata:

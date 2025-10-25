@@ -1,0 +1,9 @@
+{
+  "name": "schoolapi-root",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "npm --prefix frontend run dev",
+    "install:frontend": "npm --prefix frontend install"
+  }
+}
