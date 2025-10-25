@@ -52,10 +52,10 @@ export default function AlunoFormInline({ cpf: initialCpf = null, onSaved = () =
     if (!validateCPF(form.cpf)) e.cpf = 'CPF inválido (11 dígitos)'
     if (!validateEmail(form.email)) e.email = 'Email inválido'
     if (!initialCpf) {
-      // creating: password required
+      // criação: senha obrigatória
       if (!validatePassword(form.senha)) e.senha = 'Senha fraca (min 8 chars, maiúscula, minúscula, número e símbolo)'
     } else {
-      // editing: optional password, but validate if provided
+      // edição: senha opcional, validar se fornecida
       if (form.senha && !validatePassword(form.senha)) e.senha = 'Senha fraca (se fornecida: min 8 chars, maiúscula, minúscula, número e símbolo)'
     }
     setErrors(e)
@@ -68,8 +68,8 @@ export default function AlunoFormInline({ cpf: initialCpf = null, onSaved = () =
     try {
       if (initialCpf) {
         await api.put(`/alunos/${id}`, form)
-        // inform parent
-        showAlert('Aluno atualizado').then(() => onSaved())
+  // notifica o componente pai
+  showAlert('Aluno atualizado').then(() => onSaved())
       } else {
         await api.post('/alunos', form)
         showAlert('Aluno criado').then(() => onSaved())

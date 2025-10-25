@@ -9,7 +9,7 @@ export function formatCPF(value){
 
 export function formatDate(value){
   if(!value) return ''
-  // accept YYYY-MM-DD or ISO strings or Date objects
+  // aceita strings no formato YYYY-MM-DD, datas ISO ou objetos Date
   try{
     const d = new Date(value)
     if(isNaN(d.getTime())) return ''

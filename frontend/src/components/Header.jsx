@@ -9,7 +9,7 @@ export default function Header(){
   const location = useLocation()
 
   function handleHomeClick(){
-    // when authenticated go to admin selection, otherwise to public home
+    // quando autenticado, ir para a tela de seleção/admin; caso contrário, ir para a home pública
     if (isAuthenticated) navigate('/admin')
     else navigate('/')
   }
@@ -19,20 +19,20 @@ export default function Header(){
   return (
     <header className="app-header">
       <div className="left">
-        {/* FIAP external link (logo/icon) */}
+  {/* Link externo FIAP (logo/ícone) */}
         <a className="top-link" href="https://www.fiap.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Casa">
           <FiHome style={{verticalAlign:'middle', marginRight:8, fontSize:20}} />
         </a>
       </div>
 
       <div className="right">
-        {/* On the login page show a Home link in the header (public index) */}
+  {/* Na página de login, mostrar um link Home no cabeçalho (índice público) */}
         {!isAuthenticated && isLoginRoute && (
           <Link to="/" className="fiap-btn" aria-label="Home">Home</Link>
         )}
 
-        {/* When not authenticated show only Login (as requested).
-            When authenticated show a Home button (to admin selection) and a Logoff button. */}
+    {/* Quando não autenticado, mostrar apenas Login.
+      Quando autenticado, mostrar Home (tela de seleção/admin) e botão de Logoff. */}
         {!isAuthenticated ? (
           <Link to="/login" className="fiap-btn" aria-label="Login">Login</Link>
         ) : (

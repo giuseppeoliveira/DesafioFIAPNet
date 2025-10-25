@@ -31,11 +31,12 @@ export default function Turmas() {
       setDetailsLoading(true)
       setShowDetails(true)
       const res = await api.get(`/turmas/${id}`)
-      // API may return object directly
+      // A API pode retornar o objeto diretamente
       const data = res.data
-      // normalize field names to lowercase keys expected in UI
-      // backend returns Nome, Descricao, Id, QuantidadeAlunos, Alunos (but frontend expects camelCase)
+      // normaliza nomes de campos para o formato esperado pela UI (camelCase)
+      // o backend pode retornar Nome, Descricao, Id, QuantidadeAlunos, Alunos
       const normalized = {
+        id: data.id || data.Id || id,
         nome: data.nome || data.Nome,
         descricao: data.descricao || data.Descricao,
         quantidadeAlunos: data.quantidadeAlunos || data.QuantidadeAlunos,
@@ -48,6 +49,21 @@ export default function Turmas() {
       setShowDetails(false)
     } finally {
       setDetailsLoading(false)
+    }
+  }
+
+  async function handleDesmatricular(alunoId) {
+    if (!details?.id) return
+    const confirmed = await showConfirm('Confirma remoção da matrícula deste aluno desta turma?')
+    if (!confirmed) return
+    try {
+      await api.delete(`/alunos/${alunoId}/matriculas?turmaId=${details.id}`)
+      // refresh details list
+      await openDetails(details.id)
+      showAlert('Aluno desmatriculado com sucesso')
+    } catch (err) {
+      console.error(err)
+      showAlert(err?.response?.data?.message || 'Erro ao desmatricular')
     }
   }
 
@@ -135,9 +151,9 @@ export default function Turmas() {
                       {details.alunos.map((a) => (
                         <li key={a.id} style={{padding:6,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                           <div>{a.nome}</div>
-                          <div>
-                            {/* 'Ver aluno' button removed as not necessary */}
-                          </div>
+                          <div style={{display:'flex',gap:8}}>
+                              <button className="btn secondary" onClick={() => handleDesmatricular(a.id)}>Desmatricular</button>
+                            </div>
                         </li>
                       ))}
                     </ul>

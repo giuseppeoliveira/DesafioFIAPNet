@@ -5,7 +5,7 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' }
 })
 
-// Attach token from localStorage if present
+// Anexa o token (se presente) armazenado em localStorage às requisições (Authorization: Bearer)
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
   if (token) {

@@ -49,10 +49,10 @@ export default function AlunoForm() {
     if (!validateCPF(form.cpf)) e.cpf = 'CPF inválido (11 dígitos)'
     if (!validateEmail(form.email)) e.email = 'Email inválido'
     if (!cpf) {
-      // creating: password required and must be strong
+      // criação: senha obrigatória e deve ser forte
       if (!validatePassword(form.senha)) e.senha = 'Senha fraca (min 8 chars, maiúscula, minúscula, número e símbolo)'
     } else {
-      // editing: password is optional; if provided, validate strength
+      // edição: senha opcional; se informada, validar força
       if (form.senha && !validatePassword(form.senha)) e.senha = 'Senha fraca (se fornecida: min 8 chars, maiúscula, minúscula, número e símbolo)'
     }
     setErrors(e)
@@ -92,7 +92,7 @@ export default function AlunoForm() {
         <input
           value={form.cpf}
           onChange={(e) => {
-            // allow only digits and limit to 11 characters (no punctuation)
+            // permite apenas dígitos e limita a 11 caracteres (sem pontuação)
             const digits = e.target.value.replace(/\D/g, '').slice(0, 11)
             setForm({ ...form, cpf: digits })
           }}

@@ -23,7 +23,7 @@ public class AlunoServiceTests
     [Fact]
     public async Task CreateAlunoAsync_Throws_WhenConflictExists()
     {
-        // Arrange
+    // Preparação (Arrange)
         var request = new IAlunoService.AlunoCadastroRequest(
             Nome: "Maria",
             DataNascimento: new DateTime(2000, 1, 2, 13, 45, 0, DateTimeKind.Utc),
@@ -45,7 +45,7 @@ public class AlunoServiceTests
                 }
             }));
 
-        // Act & Assert
+    // Ação e Verificação (Act & Assert)
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => service.CreateAlunoAsync(request));
         Assert.Equal("Aluno ja estava presente", ex.Message);
     }
@@ -53,7 +53,7 @@ public class AlunoServiceTests
     [Fact]
     public async Task CreateAlunoAsync_Success_CleansCpf_Encrypts_And_CallsRepo()
     {
-        // Arrange
+    // Preparação (Arrange)
         var request = new IAlunoService.AlunoCadastroRequest(
             Nome: "João",
             DataNascimento: new DateTime(1995, 5, 10, 8, 30, 0, DateTimeKind.Utc),
@@ -86,10 +86,10 @@ public class AlunoServiceTests
             )
             .Returns(Task.FromResult(42));
 
-        // Act
+    // Ação (Act)
         var id = await service.CreateAlunoAsync(request);
 
-        // Assert
+    // Verificação (Assert)
         Assert.Equal(42, id);
     alunoRepository.Received(1).CreateAlunoAsync(Arg.Any<Aluno>(), Arg.Any<CancellationToken>());
     cryptographyService.Received(1).PasswordEncypt(request.Senha);
@@ -98,7 +98,7 @@ public class AlunoServiceTests
     [Fact]
     public async Task UpdateAlunoAsync_Throws_WhenConflictExists()
     {
-        // Arrange
+    // Preparação (Arrange)
         var request = new IAlunoService.AlunoCadastroRequest(
             Nome: "Ana",
             DataNascimento: new DateTime(1990, 12, 1),
@@ -121,7 +121,7 @@ public class AlunoServiceTests
                 }
             }));
 
-        // Act & Assert
+    // Ação e Verificação (Act & Assert)
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => service.UpdateAlunoAsync(10, request));
         Assert.Equal("Aluno ja estava presente", ex.Message);
     }
@@ -129,7 +129,7 @@ public class AlunoServiceTests
     [Fact]
     public async Task UpdateAlunoAsync_Throws_WhenAlunoNotFound()
     {
-        // Arrange
+    // Preparação (Arrange)
         var request = new IAlunoService.AlunoCadastroRequest(
             Nome: "Ana",
             DataNascimento: new DateTime(1990, 12, 1),
@@ -148,8 +148,8 @@ public class AlunoServiceTests
             .UpdateAlunoAsync(10, Arg.Any<Aluno>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(false));
 
-        // Act & Assert
-        var ex = await Assert.ThrowsAsync<KeyNotFoundException>(() => service.UpdateAlunoAsync(10, request));
+    // Ação e Verificação (Act & Assert)
+    var ex = await Assert.ThrowsAsync<KeyNotFoundException>(() => service.UpdateAlunoAsync(10, request));
         Assert.Equal("Aluno nao encontrado", ex.Message);
     }
 
@@ -181,10 +181,10 @@ public class AlunoServiceTests
                 Items: new[] { aluno }
             )));
 
-        // Act
+    // Ação (Act)
         var result = await service.GetAlunosAsync(query, nomeQuery: "Bia", cpfQuery: "1");
 
-        // Assert: repo called with empty cpf
+    // Verificação: repositório foi chamado com CPF vazio
     alunoRepository.Received(1).GetAlunosAsync(query, "Bia", "", Arg.Any<CancellationToken>());
 
         Assert.Equal(1, result.QntdItens);
@@ -213,10 +213,10 @@ public class AlunoServiceTests
             )
             .Returns(Task.FromResult(new PaginacaoResponse<Aluno>(0, 0, Array.Empty<Aluno>())));
 
-        // Act
+    // Ação (Act)
         var result = await service.GetAlunosAsync(query, nomeQuery: null, cpfQuery: rawCpf);
 
-        // Assert
+    // Verificação (Assert)
         alunoRepository.Received(1).GetAlunosAsync(
             query,
             "",
@@ -229,7 +229,7 @@ public class AlunoServiceTests
     [Fact]
     public async Task MatricularAlunoAsync_ReturnsExistingId_WhenAlreadyEnrolled()
     {
-        // Arrange
+    // Preparação (Arrange)
         var alunoId = 5;
         var turmaId = 10;
         var existing = new Matricula { Id = 99, Alunoid = alunoId, Turmaid = turmaId };
@@ -238,7 +238,7 @@ public class AlunoServiceTests
             .MatriculaMesmoAlunoTurma(alunoId, turmaId, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<Matricula?>(existing));
 
-        // Act & Assert - agora o serviço lança exceção quando já matriculado
+    // Ação e Verificação - agora o serviço lança exceção quando já matriculado
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => service.MatricularAlunoAsync(alunoId, turmaId));
         Assert.Equal("Aluno ja está matriculado nessa turma", ex.Message);
         matriculaRepository.DidNotReceive().AdicionarMatricula(Arg.Any<Matricula>(), Arg.Any<CancellationToken>());
@@ -247,7 +247,7 @@ public class AlunoServiceTests
     [Fact]
     public async Task MatricularAlunoAsync_CreatesAndReturnsId_WhenNotEnrolled()
     {
-        // Arrange
+    // Preparação (Arrange)
         var alunoId = 6;
         var turmaId = 11;
 
@@ -260,14 +260,14 @@ public class AlunoServiceTests
             .Do(ci =>
             {
                 var m = ci.Arg<Matricula>();
-                // simulate EF setting the Id after save
+                // simula o EF atribuindo o Id após o save
                 m.Id = 123;
             });
 
-        // Act
+    // Ação (Act)
         var id = await service.MatricularAlunoAsync(alunoId, turmaId);
 
-        // Assert
+    // Verificação (Assert)
         Assert.Equal(123, id);
     matriculaRepository.Received(1).AdicionarMatricula(Arg.Is<Matricula>(m => m.Alunoid == alunoId && m.Turmaid == turmaId), Arg.Any<CancellationToken>());
     }

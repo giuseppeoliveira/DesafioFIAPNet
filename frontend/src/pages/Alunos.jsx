@@ -12,16 +12,16 @@ export default function Alunos() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [search, setSearch] = useState('')
-  const [searchType, setSearchType] = useState('cpf') // 'cpf' or 'nome'
+  const [searchType, setSearchType] = useState('cpf') // 'cpf' ou 'nome' (tipo de busca)
   const navigate = useNavigate()
 
   const [showSelector, setShowSelector] = useState(false)
   const [selectedAluno, setSelectedAluno] = useState(null)
   const [turmaSearch, setTurmaSearch] = useState('')
   const [turmasResults, setTurmasResults] = useState([])
-  // selected turma ids for current open selector (Set)
+  // ids das turmas selecionadas no seletor atual (Set)
   const [selectedTurmaIds, setSelectedTurmaIds] = useState(new Set())
-  // persistent map alunoId -> array of turmaIds (kept in localStorage so selection 'persists')
+  // mapa persistente: alunoId -> array de turmaIds (salvo em localStorage para que a seleção persista)
   const [selectedMap, setSelectedMap] = useState(() => {
     try {
       const raw = localStorage.getItem('matriculas_map')
@@ -41,7 +41,7 @@ export default function Alunos() {
 
   async function fetchAlunos(searchQuery, searchPage) {
     try {
-      // send both params; backend will interpret empty strings as no filter
+  // envia ambos os parâmetros; o backend interpreta strings vazias como sem filtro
       const cpfQuery = searchType === 'cpf' ? searchQuery : ''
       const nomeQuery = searchType === 'nome' ? searchQuery : ''
       const res = await api.get(`/alunos?cpfQuery=${encodeURIComponent(cpfQuery)}&nomeQuery=${encodeURIComponent(nomeQuery)}&pagina=${searchPage}`)
@@ -61,7 +61,7 @@ export default function Alunos() {
     if (!confirmed) return
     try {
       await api.delete(`/alunos/${id}`)
-      // refetch current page
+  // reconsulta a página atual
       fetchAlunos(search, page)
     } catch (err) {
       showAlert(err?.response?.data?.message || 'Erro ao excluir')
@@ -73,9 +73,9 @@ export default function Alunos() {
     setShowSelector(true)
     setTurmaSearch('')
     setTurmasResults([])
-    // carregar primeiras turmas
+  // carregar as primeiras turmas/resultado inicial
     fetchTurmasForSelector('')
-    // initialize selected set from persisted map (if exists)
+  // inicializa o conjunto de selecionados a partir do mapa persistido (se existir)
     const existing = (selectedMap && selectedMap[aluno.id]) || []
     setSelectedTurmaIds(new Set(existing))
   }
@@ -84,7 +84,7 @@ export default function Alunos() {
     try {
       const res = await api.get(`/turmas?nomeQuery=${encodeURIComponent(searchQuery || '')}&pagina=1&tamanhoPagina=100`)
       const items = res.data.items || []
-      // sort alphabetically for a predictable order
+  // ordena alfabeticamente para uma ordem previsível
       items.sort((a,b) => (a.nome || '').localeCompare(b.nome || ''))
       setTurmasResults(items)
     } catch (err) {
@@ -93,7 +93,7 @@ export default function Alunos() {
     }
   }
 
-  // Toggle selection for a turma in the current selector
+  // Alterna seleção de uma turma no seletor atual
   function toggleTurmaSelection(turmaId) {
     setSelectedTurmaIds(prev => {
       const next = new Set(prev)

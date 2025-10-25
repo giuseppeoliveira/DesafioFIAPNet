@@ -7,12 +7,12 @@ export function AppLayout({ children }){
   const location = useLocation()
   const navigate = useNavigate()
   const pathname = location.pathname || '/'
-  // hide back button on root, index variations, login and admin selection screen
+  // esconder botão Voltar nas telas raiz, variações de index, login e na tela de seleção do admin
   const hideBackOn = ['/', '/index.html', '/login', '/admin']
   const shouldHideBack = hideBackOn.some(p => pathname === p || pathname.startsWith(p) || pathname.endsWith(p))
 
   function handleBack(){
-    // when in alunos/turmas return to admin selection (logged-in home)
+  // quando em /alunos ou /turmas, retornar para a tela de seleção do admin (home autenticado)
     if(pathname.startsWith('/alunos') || pathname.startsWith('/turmas')){
       navigate('/admin')
       return

@@ -11,10 +11,10 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Adiciona serviços ao contêiner.
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// Saiba mais sobre como configurar o OpenAPI em https://aka.ms/aspnet/openapi
 
 var connectionString = Environment.GetEnvironmentVariable("SchoolAPI_DB_ConnectionString") ?? throw new Exception("Vari�vel de ambiente n�o configurada!");
 
@@ -26,7 +26,7 @@ DependencyInjection.CustomOpenApi(builder.Services);
 DependencyInjection.CustomCors(builder.Services);
 DependencyInjection.AddServices(builder.Services);
 
-// JWT
+// Configuração do JWT (autenticação via token)
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var rawKey = jwtSettings["Key"] ?? throw new Exception("Chave JWT n�o configurada!");
 var key = Encoding.UTF8.GetBytes(rawKey);
@@ -59,7 +59,7 @@ app.UseHttpsRedirection();
 app.MapOpenApi();
 app.MapScalarApiReference();
 
-app.UseDefaultFiles(); // Enables serving index.html as the default file
+app.UseDefaultFiles(); // Habilita servir o arquivo index.html como padrão
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
