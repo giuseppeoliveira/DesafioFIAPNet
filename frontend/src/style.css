@@ -168,7 +168,7 @@ th{font-weight:600}
 .admin-hero{background:transparent;padding:8px 0;text-align:center}
 .admin-hero h2{margin:0;font-size:1.6rem}
 
-.feature-card{display:flex;flex-direction:column;gap:10px;padding:20px}
+.feature-card{display:flex;flex-direction:column;gap:10px;padding:20px;align-items:center;text-align:center}
 .feature-card .icon-box{width:48px;height:48px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center}
 .feature-card h3{margin:0}
 

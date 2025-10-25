@@ -29,10 +29,10 @@ public class AlunoController : ControllerBase
     {
 
         if(pagina < 1)
-            return Results.BadRequest(new { Message = "pagina was invalid"});
+            return Results.BadRequest(new { Message = "Página inválida"});
 
         if(tamanhoPagina < 1)
-            return Results.BadRequest(new { Message = "tamanhoPagina was invalid"});
+            return Results.BadRequest(new { Message = "Tamanho da Pagina inválida"});
 
         var paginatedResponse = await alunoService.GetAlunosAsync(
             new PaginacaoQuery(
@@ -69,21 +69,21 @@ public class AlunoController : ControllerBase
         );
 
         if(senhaInvalida)
-            return Results.BadRequest(new { Message = "senha was invalid"});
+            return Results.BadRequest(new { Message = "Senha Invalida"});
         
         if(!Validacao.IsValidCpf(cpf))
-            return Results.BadRequest(new { Message = "cpf was invalid"});
+            return Results.BadRequest(new { Message = "Cpf invalido"});
 
         if(!Validacao.IsEmailValid(email))
-            return Results.BadRequest(new { Message = "email was invalid"});
+            return Results.BadRequest(new { Message = "Email invalido"});
 
         var agora = DateTime.UtcNow;
 
         if((dataNascimento < agora.AddYears(-150)) || (dataNascimento > agora) )
-            return Results.BadRequest(new { Message = "dataNascimento was invalid"});
+            return Results.BadRequest(new { Message = "Data de Nascimento invalido"});
 
         if(nome is { Length: < 3 or > 100})
-            return Results.BadRequest(new { Message = "nome was invalid"});
+            return Results.BadRequest(new { Message = "Nome invalido"});
 
         int idCriado = 0;
 
@@ -93,7 +93,7 @@ public class AlunoController : ControllerBase
         } catch (InvalidOperationException e)
         {
             return Results.Json(
-                new { Message = "Aluno está em conflito por cpf ou email"}, 
+                new { Message = "Aluno está em conflito com cpf ou email"}, 
                 statusCode: StatusCodes.Status403Forbidden
             );
         }
@@ -123,21 +123,21 @@ public class AlunoController : ControllerBase
         );
 
         if (senhaInvalida)
-            return Results.BadRequest(new { Message = "senha was invalid" });
+            return Results.BadRequest(new { Message = "Senha invalida" });
 
         if (!Validacao.IsValidCpf(cpf))
-            return Results.BadRequest(new { Message = "cpf was invalid" });
+            return Results.BadRequest(new { Message = "Cpf invalido" });
 
         if (!Validacao.IsEmailValid(email))
-            return Results.BadRequest(new { Message = "email was invalid" });
+            return Results.BadRequest(new { Message = "Email invalido" });
 
         var agora = DateTime.UtcNow;
 
         if ((dataNascimento < agora.AddYears(-150)) || (dataNascimento > agora))
-            return Results.BadRequest(new { Message = "dataNascimento was invalid" });
+            return Results.BadRequest(new { Message = "Data de Nascimento invalida" });
 
         if (nome is { Length: < 3 or > 100 })
-            return Results.BadRequest(new { Message = "nome was invalid" });
+            return Results.BadRequest(new { Message = "Nome invalido" });
 
         try
         {

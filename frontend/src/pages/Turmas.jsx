@@ -81,7 +81,7 @@ export default function Turmas() {
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}>
         <div>
           <h2>Turmas</h2>
-          <p className="muted">Listagem de turmas — mostre quantos alunos por turma</p>
+          <p className="muted">Lista de turmas</p>
         </div>
         <div style={{display:'flex',gap:8,alignItems:'center'}}>
           <input className="search" placeholder="Buscar por nome" value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -136,7 +136,7 @@ export default function Turmas() {
                         <li key={a.id} style={{padding:6,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                           <div>{a.nome}</div>
                           <div>
-                            <button className="btn" onClick={() => navigate(`/alunos/${a.id}/edit`)}>Ver aluno</button>
+                            {/* 'Ver aluno' button removed as not necessary */}
                           </div>
                         </li>
                       ))}

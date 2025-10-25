@@ -28,10 +28,10 @@ public class TurmaController : ControllerBase
     )
     {   
         if(pagina < 1)
-            return Results.BadRequest(new { Message = "pagina was invalid"});
+            return Results.BadRequest(new { Message = "Página inválida"});
 
         if(tamanhoPagina < 1)
-            return Results.BadRequest(new { Message = "tamanhoPagina was invalid"});
+            return Results.BadRequest(new { Message = "Tamanho da Pagina inválida"});
 
         var paginatedResponse = await turmaService.GetTurmaAsync(
             new PaginacaoQuery(
@@ -82,7 +82,7 @@ public class TurmaController : ControllerBase
         ) = turmaRequest;
 
         if(nome is { Length: < 3 or > 100})
-            return Results.BadRequest(new { Message = "nome was invalid"});
+            return Results.BadRequest(new { Message = "Nome Inválido"});
 
         int idCriado = await turmaService.CreateTurmaAsync(turmaRequest, cancellationToken);
 
@@ -104,7 +104,7 @@ public class TurmaController : ControllerBase
         ) = turmaRequest;
 
         if (nome is { Length: < 3 or > 100 })
-            return Results.BadRequest(new { Message = "nome was invalid" });
+            return Results.BadRequest(new { Message = "Nome Inválido" });
 
         try
         {
