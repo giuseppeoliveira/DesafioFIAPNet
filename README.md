@@ -27,9 +27,9 @@ Este README descreve como configurar, executar e testar o projeto.
 
 ## Executando com Docker / Docker Compose (RECOMENDADO)
 
-A forma preferencial de executar este projeto é via Docker Compose — ele sobe os serviços necessários (API, frontend e banco) já configurados.
+A forma preferencial de executar este projeto é via Docker Compose — ele sobe os serviços necessários (API, frontend e banco) já configurados. Para acessar o painel admin (Login: admin@gmail.com, Senha: Fiap@2025)
 
-> Observação: quando executado via Docker Compose, o frontend ficará disponível em
+> Observação: quando executado via Docker Compose o frontend ficará disponível em
 
 ```
 http://localhost:5000/index.html
